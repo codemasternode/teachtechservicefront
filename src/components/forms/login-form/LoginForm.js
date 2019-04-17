@@ -3,17 +3,16 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import { onChange as change } from "../../helpers/formHelpers";
 import Axios from "axios";
-import { AlertContext } from "../../../App";
+import { AlertContext, AuthContext } from "../../../App";
 import { FormHelperText } from "@material-ui/core";
 import { isEmail } from "../../helpers/formHelpers";
+import { withRouter, Redirect } from "react-router-dom";
 
 const styles = theme => ({
   main: {
@@ -115,7 +114,7 @@ class LoginForm extends React.Component {
           ...this.state,
           errors: {
             ...this.state.errors,
-            password: "asd"
+            password: "Hasło jest wymagane"
           }
         });
       } else {
@@ -123,7 +122,7 @@ class LoginForm extends React.Component {
           ...this.state,
           errors: {
             ...this.state.errors,
-            password: "asdddd"
+            password: ""
           }
         });
       }
@@ -145,7 +144,8 @@ class LoginForm extends React.Component {
     })
       .then(res => {
         handleOpenAlert("Udało się zalogować", "success");
-        console.log(res);
+        localStorage.setItem("token", res.data.token);
+        this.props.history.replace("/");
       })
       .catch(err => {
         if (err.response) {
@@ -163,83 +163,104 @@ class LoginForm extends React.Component {
       });
   };
 
+  componentDidMount() {
+    console.log(this.props.history);
+    if (localStorage.getItem("token")) {
+      this.props.history.replace("/");
+    }
+  }
+
   render() {
     const { classes } = this.props;
-    setInterval(() => {
-      console.log(this.state);
-    }, 5000);
-
     return (
-      <AlertContext.Consumer>
-        {({ handleOpenAlert }) => (
+      <AuthContext.Consumer>
+        {({ isAuth }) => (
           <React.Fragment>
-            <Paper className={classes.paper}>
-              <Typography
-                component="h1"
-                variant="h3"
-                style={{ marginBottom: "2.3rem" }}
-              >
-                Zaloguj się
-              </Typography>
-              <form className={classes.form}>
-                <FormControl margin="normal" required fullWidth>
-                  <InputLabel htmlFor="email">Adres email</InputLabel>
-                  <Input
-                    id="email"
-                    name="email"
-                    autoComplete="email"
-                    onChange={this.onChange.bind(this)}
-                    onBlur={this.onBlur}
-                    className={`${this.state.errors.email ? "error" : ""}`}
-                  />
-                  {this.state.errors.email ? (
-                    <FormHelperText style={{ color: "red" }}>
-                      {this.state.errors.email}
-                    </FormHelperText>
-                  ) : (
-                    <FormHelperText />
-                  )}
-                </FormControl>
-                <FormControl margin="normal" required fullWidth>
-                  <InputLabel htmlFor="password">Hasło</InputLabel>
-                  <Input
-                    name="password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    onChange={this.onChange.bind(this)}
-                    onBlur={this.onBlur}
-                    className={`${this.state.errors.password ? "error" : ""}`}
-                  />
-                  {this.state.errors.password ? (
-                    <FormHelperText style={{ color: "red" }}>
-                      {this.state.errors.password}
-                    </FormHelperText>
-                  ) : (
-                    <FormHelperText />
-                  )}
-                </FormControl>
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  onClick={e => this.onSubmit(e, handleOpenAlert)}
-                >
-                  Sign in
-                </Button>
-              </form>
-            </Paper>
+            {isAuth ? (
+              <Redirect to="/" />
+            ) : (
+              <AlertContext.Consumer>
+                {({ handleOpenAlert }) => (
+                  <React.Fragment>
+                    <Paper className={classes.paper}>
+                      <Avatar
+                        src="images/logo.png"
+                        style={{
+                          width: 80,
+                          height: 80,
+                          marginBottom: "2.5rem"
+                        }}
+                      />
+                      <Typography
+                        component="h1"
+                        variant="h3"
+                        style={{ marginBottom: "2.3rem" }}
+                      >
+                        Zaloguj się
+                      </Typography>
+                      <form className={classes.form}>
+                        <FormControl margin="normal" required fullWidth>
+                          <InputLabel htmlFor="email">Adres email</InputLabel>
+                          <Input
+                            id="email"
+                            name="email"
+                            autoComplete="email"
+                            onChange={this.onChange.bind(this)}
+                            onBlur={this.onBlur}
+                            className={`${
+                              this.state.errors.email ? "error" : ""
+                            }`}
+                          />
+                          {this.state.errors.email ? (
+                            <FormHelperText style={{ color: "red" }}>
+                              {this.state.errors.email}
+                            </FormHelperText>
+                          ) : (
+                            <FormHelperText />
+                          )}
+                        </FormControl>
+                        <FormControl margin="normal" required fullWidth>
+                          <InputLabel htmlFor="password">Hasło</InputLabel>
+                          <Input
+                            name="password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            onChange={this.onChange.bind(this)}
+                            onBlur={this.onBlur}
+                            className={`${
+                              this.state.errors.password ? "error" : ""
+                            }`}
+                          />
+                          {this.state.errors.password ? (
+                            <FormHelperText style={{ color: "red" }}>
+                              {this.state.errors.password}
+                            </FormHelperText>
+                          ) : (
+                            <FormHelperText />
+                          )}
+                        </FormControl>
+                        <Button
+                          type="submit"
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          className={classes.submit}
+                          onClick={e => this.onSubmit(e, handleOpenAlert)}
+                        >
+                          Zaloguj się
+                        </Button>
+                      </form>
+                    </Paper>
+                  </React.Fragment>
+                )}
+              </AlertContext.Consumer>
+            )}
           </React.Fragment>
         )}
-      </AlertContext.Consumer>
+      </AuthContext.Consumer>
     );
   }
 }
 
-export default withStyles(styles)(LoginForm);
+export default withRouter(withStyles(styles)(LoginForm));
