@@ -1,18 +1,11 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import withStyles from "@material-ui/core/styles/withStyles";
-import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
 import { onChange as change } from "../../helpers/formHelpers";
 import Axios from "axios";
 import { AlertContext, AuthContext } from "../../../App";
-import { FormHelperText } from "@material-ui/core";
 import { isEmail } from "../../helpers/formHelpers";
 import { withRouter, Redirect } from "react-router-dom";
+import { Form } from "./Form";
+import { withStyles } from "@material-ui/core";
 
 const styles = theme => ({
   main: {
@@ -71,6 +64,7 @@ class LoginForm extends React.Component {
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onBlur = this.onBlur.bind(this);
+    this.onChange = this.onChange.bind(this)
   }
 
   onChange = e => {
@@ -182,76 +176,14 @@ class LoginForm extends React.Component {
               <AlertContext.Consumer>
                 {({ handleOpenAlert }) => (
                   <React.Fragment>
-                    <Paper className={classes.paper}>
-                      <Avatar
-                        src="images/logo.png"
-                        style={{
-                          width: 80,
-                          height: 80,
-                          marginBottom: "2.5rem"
-                        }}
-                      />
-                      <Typography
-                        component="h1"
-                        variant="h3"
-                        style={{ marginBottom: "2.3rem" }}
-                      >
-                        Zaloguj się
-                      </Typography>
-                      <form className={classes.form}>
-                        <FormControl margin="normal" required fullWidth>
-                          <InputLabel htmlFor="email">Adres email</InputLabel>
-                          <Input
-                            id="email"
-                            name="email"
-                            autoComplete="email"
-                            onChange={this.onChange.bind(this)}
-                            onBlur={this.onBlur}
-                            className={`${
-                              this.state.errors.email ? "error" : ""
-                            }`}
-                          />
-                          {this.state.errors.email ? (
-                            <FormHelperText style={{ color: "red" }}>
-                              {this.state.errors.email}
-                            </FormHelperText>
-                          ) : (
-                            <FormHelperText />
-                          )}
-                        </FormControl>
-                        <FormControl margin="normal" required fullWidth>
-                          <InputLabel htmlFor="password">Hasło</InputLabel>
-                          <Input
-                            name="password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={this.onChange.bind(this)}
-                            onBlur={this.onBlur}
-                            className={`${
-                              this.state.errors.password ? "error" : ""
-                            }`}
-                          />
-                          {this.state.errors.password ? (
-                            <FormHelperText style={{ color: "red" }}>
-                              {this.state.errors.password}
-                            </FormHelperText>
-                          ) : (
-                            <FormHelperText />
-                          )}
-                        </FormControl>
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          color="primary"
-                          className={classes.submit}
-                          onClick={e => this.onSubmit(e, handleOpenAlert)}
-                        >
-                          Zaloguj się
-                        </Button>
-                      </form>
-                    </Paper>
+                    <Form
+                      classes={classes}
+                      errors={this.state.errors}
+                      onBlur={this.onBlur}
+                      onChange={this.onChange}
+                      onSubmit={this.onSubmit}
+                      handleOpenAlert={handleOpenAlert}
+                    />
                   </React.Fragment>
                 )}
               </AlertContext.Consumer>
