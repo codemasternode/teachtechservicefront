@@ -1,3 +1,8 @@
-import React from 'react'
+import React from "react";
+import RegisterForm from "../components/forms/register-form/RegisterForm";
 
-export default () => <div>Register</div>;
+export default () => (
+  <React.Fragment>
+    <RegisterForm />
+  </React.Fragment>
+);
