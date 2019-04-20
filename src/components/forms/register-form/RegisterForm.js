@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Stepper from "./Stepper";
-import { Step1, Step2, Step3, Main } from "./steps";
+import { Step1, Step2, Step3, Main } from "./steps/index";
 
 const styles = theme => ({
   root: {
@@ -42,10 +42,26 @@ function getStepContent(step) {
   }
 }
 
+const PlanContext = React.createContext();
+
 class HorizontalLinearStepper extends React.Component {
   state = {
     activeStep: 0,
-    skipped: new Set()
+    skipped: new Set(),
+    plan: 1
+  };
+
+  setPlan = number => {
+    console.log(number);
+    if (typeof number != "number") {
+      throw new Error("It is not a number");
+    }
+    this.setState({
+      plan: number
+    });
+    process.nextTick(() => {
+      console.log(this.state);
+    });
   };
 
   isStepOptional = step => step === 2;
@@ -100,59 +116,63 @@ class HorizontalLinearStepper extends React.Component {
     const steps = getSteps();
     const { activeStep } = this.state;
     return (
-      <div className={classes.root}>
-        <Main className={classes.main}>
-          <Stepper
-            activeStep={activeStep}
-            steps={steps}
-            isStepOptional={this.isStepOptional}
-            isStepSkipped={this.isStepSkipped.bind(this)}
-          />
-          {activeStep === steps.length ? (
-            <div>
-              <Typography className={classes.instructions}>
-                All steps completed - you&apos;re finished
-              </Typography>
-              <Button onClick={this.handleReset} className={classes.button}>
-                Reset
-              </Button>
-            </div>
-          ) : (
-            <div>
-              <Typography className={classes.instructions}>
-                {getStepContent(activeStep)}
-              </Typography>
+      <PlanContext.Provider
+        value={{ setPlan: this.setPlan.bind(this), plan: this.state.plan }}
+      >
+        <div className={classes.root}>
+          <Main className={classes.main}>
+            <Stepper
+              activeStep={activeStep}
+              steps={steps}
+              isStepOptional={this.isStepOptional}
+              isStepSkipped={this.isStepSkipped.bind(this)}
+            />
+            {activeStep === steps.length ? (
               <div>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={this.handleBack}
-                  className={classes.button}
-                >
-                  Back
+                <Typography className={classes.instructions}>
+                  All steps completed - you&apos;re finished
+                </Typography>
+                <Button onClick={this.handleReset} className={classes.button}>
+                  Reset
                 </Button>
-                {this.isStepOptional(activeStep) && (
+              </div>
+            ) : (
+              <div>
+                <Typography className={classes.instructions}>
+                  {getStepContent(activeStep)}
+                </Typography>
+                <div>
+                  <Button
+                    disabled={activeStep === 0}
+                    onClick={this.handleBack}
+                    className={classes.button}
+                  >
+                    Back
+                  </Button>
+                  {this.isStepOptional(activeStep) && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={this.handleSkip}
+                      className={classes.button}
+                    >
+                      Skip
+                    </Button>
+                  )}
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={this.handleSkip}
+                    onClick={this.handleNext}
                     className={classes.button}
                   >
-                    Skip
+                    {activeStep === steps.length - 1 ? "Finish" : "Next"}
                   </Button>
-                )}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={this.handleNext}
-                  className={classes.button}
-                >
-                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
-                </Button>
+                </div>
               </div>
-            </div>
-          )}
-        </Main>
-      </div>
+            )}
+          </Main>
+        </div>
+      </PlanContext.Provider>
     );
   }
 }
@@ -161,4 +181,5 @@ HorizontalLinearStepper.propTypes = {
   classes: PropTypes.object
 };
 
+export { PlanContext };
 export default withStyles(styles)(HorizontalLinearStepper);

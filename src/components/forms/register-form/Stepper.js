@@ -5,7 +5,7 @@ import StepLabel from "@material-ui/core/StepLabel";
 import Typography from "@material-ui/core/Typography";
 
 export default ({ activeStep, steps, isStepOptional, isStepSkipped }) => (
-  <Stepper activeStep={activeStep}>
+  <Stepper activeStep={activeStep} alternativeLabel>
     {steps.map((label, index) => {
       const props = {};
       const labelProps = {};
