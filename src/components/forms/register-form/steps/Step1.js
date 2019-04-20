@@ -8,7 +8,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import { withStyles } from "@material-ui/core";
 import { Main } from "./index";
-import { PlanContext } from "../RegisterForm";
+import { RegisterFormContext } from "../RegisterForm";
 
 const tiers = [
   {
@@ -117,7 +117,7 @@ const style = theme => {
 };
 
 export default withStyles(style)(({ classes }) => (
-  <PlanContext.Consumer>
+  <RegisterFormContext.Consumer>
     {({ setPlan, plan }) => (
       <Main>
         <Typography
@@ -222,5 +222,5 @@ export default withStyles(style)(({ classes }) => (
         </Grid>
       </Main>
     )}
-  </PlanContext.Consumer>
+  </RegisterFormContext.Consumer>
 ));

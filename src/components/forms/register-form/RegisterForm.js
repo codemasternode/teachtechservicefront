@@ -42,11 +42,11 @@ function getStepContent(step) {
   }
 }
 
-const PlanContext = React.createContext();
+const RegisterFormContext = React.createContext();
 
 class HorizontalLinearStepper extends React.Component {
   state = {
-    activeStep: 0,
+    activeStep: 1,
     skipped: new Set(),
     plan: 1
   };
@@ -116,7 +116,7 @@ class HorizontalLinearStepper extends React.Component {
     const steps = getSteps();
     const { activeStep } = this.state;
     return (
-      <PlanContext.Provider
+      <RegisterFormContext.Provider
         value={{ setPlan: this.setPlan.bind(this), plan: this.state.plan }}
       >
         <div className={classes.root}>
@@ -147,7 +147,7 @@ class HorizontalLinearStepper extends React.Component {
                     onClick={this.handleBack}
                     className={classes.button}
                   >
-                    Back
+                    Wstecz
                   </Button>
                   {this.isStepOptional(activeStep) && (
                     <Button
@@ -156,7 +156,7 @@ class HorizontalLinearStepper extends React.Component {
                       onClick={this.handleSkip}
                       className={classes.button}
                     >
-                      Skip
+                      Pomiń
                     </Button>
                   )}
                   <Button
@@ -165,14 +165,14 @@ class HorizontalLinearStepper extends React.Component {
                     onClick={this.handleNext}
                     className={classes.button}
                   >
-                    {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                    {activeStep === steps.length - 1 ? "Zakończ" : "Dalej"}
                   </Button>
                 </div>
               </div>
             )}
           </Main>
         </div>
-      </PlanContext.Provider>
+      </RegisterFormContext.Provider>
     );
   }
 }
@@ -181,5 +181,5 @@ HorizontalLinearStepper.propTypes = {
   classes: PropTypes.object
 };
 
-export { PlanContext };
+export { RegisterFormContext };
 export default withStyles(styles)(HorizontalLinearStepper);

@@ -6,6 +6,7 @@ import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
 import Alert from "./components/alerts/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import "dotenv/config";
+import Nav from "./components/sections/Nav";
 
 const AlertContext = React.createContext();
 const AuthContext = React.createContext();
@@ -63,25 +64,28 @@ class App extends Component {
           >
             <div className="App">
               <Router>
-                <Switch>
-                  <Route path="/login" component={Pages.LoginPage} />
-                  <Route path="/register" component={Pages.RegisterPage} />
-                </Switch>
-                <Snackbar
-                  open={this.state.isOpenAlert}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right"
-                  }}
-                  autoHideDuration={6000}
-                  onClose={() => this.setState({ isOpenAlert: false })}
-                >
-                  <Alert
+                <Nav />
+                <div style={{ marginTop: "4rem" }}>
+                  <Switch>
+                    <Route path="/login" component={Pages.LoginPage} />
+                    <Route path="/register" component={Pages.RegisterPage} />
+                  </Switch>
+                  <Snackbar
+                    open={this.state.isOpenAlert}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right"
+                    }}
+                    autoHideDuration={6000}
                     onClose={() => this.setState({ isOpenAlert: false })}
-                    message={this.state.messageAlert}
-                    variant={this.state.variantAlert}
-                  />
-                </Snackbar>
+                  >
+                    <Alert
+                      onClose={() => this.setState({ isOpenAlert: false })}
+                      message={this.state.messageAlert}
+                      variant={this.state.variantAlert}
+                    />
+                  </Snackbar>
+                </div>
               </Router>
             </div>
           </AlertContext.Provider>
