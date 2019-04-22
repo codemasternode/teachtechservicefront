@@ -11,7 +11,8 @@ const styles = theme => ({
     width: "100%",
     height: "100vh",
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
+    
   },
   main: {
     minHeight: "100vh"
@@ -22,6 +23,10 @@ const styles = theme => ({
   instructions: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit
+  },
+  controlPanel: {
+    marginTop: "2rem",
+    marginBottom: "6rem"
   }
 });
 
@@ -46,7 +51,7 @@ const RegisterFormContext = React.createContext();
 
 class HorizontalLinearStepper extends React.Component {
   state = {
-    activeStep: 1,
+    activeStep: 0,
     skipped: new Set(),
     plan: 1
   };
@@ -141,7 +146,7 @@ class HorizontalLinearStepper extends React.Component {
                 <Typography className={classes.instructions}>
                   {getStepContent(activeStep)}
                 </Typography>
-                <div>
+                <div className={classes.controlPanel}>
                   <Button
                     disabled={activeStep === 0}
                     onClick={this.handleBack}

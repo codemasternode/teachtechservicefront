@@ -9,6 +9,7 @@ import CardHeader from "@material-ui/core/CardHeader";
 import { withStyles } from "@material-ui/core";
 import { Main } from "./index";
 import { RegisterFormContext } from "../RegisterForm";
+import Period from "./Period";
 
 const tiers = [
   {
@@ -219,6 +220,25 @@ export default withStyles(style)(({ classes }) => (
               </Grid>
             );
           })}
+        </Grid>
+        <Typography
+          component="h1"
+          variant="h2"
+          align="center"
+          color="textPrimary"
+          gutterBottom
+          style={{ marginTop: "4rem", marginBottom: 0 }}
+        >
+          Okres czasu
+        </Typography>
+        <Grid
+          sm={12}
+          container
+          justify="space-around"
+          className={classes.container}
+          spacing={2}
+        >
+          <Period />
         </Grid>
       </Main>
     )}
