@@ -11,8 +11,7 @@ const styles = theme => ({
     width: "100%",
     height: "100vh",
     marginLeft: "auto",
-    marginRight: "auto",
-    
+    marginRight: "auto"
   },
   main: {
     minHeight: "100vh"
@@ -53,7 +52,31 @@ class HorizontalLinearStepper extends React.Component {
   state = {
     activeStep: 0,
     skipped: new Set(),
-    plan: 1
+    plan: 1,
+    periodValue: 1,
+    periodPlan: {
+      multiplier: 1,
+      months: 4
+    },
+    toPay: 0,
+    ranges: [
+      {
+        multiplier: 1.4,
+        months: 1
+      },
+      {
+        multiplier: 1,
+        months: 4
+      },
+      {
+        multiplier: 0.8,
+        months: 9
+      },
+      {
+        multiplier: 0.75,
+        months: 12
+      }
+    ]
   };
 
   setPlan = number => {
@@ -112,6 +135,13 @@ class HorizontalLinearStepper extends React.Component {
     });
   };
 
+  setPeriodPlan = period => {
+    this.setState({
+      periodValue: period,
+      periodPlan: this.state.ranges[period]
+    });
+  };
+
   isStepSkipped(step) {
     return this.state.skipped.has(step);
   }
@@ -122,7 +152,14 @@ class HorizontalLinearStepper extends React.Component {
     const { activeStep } = this.state;
     return (
       <RegisterFormContext.Provider
-        value={{ setPlan: this.setPlan.bind(this), plan: this.state.plan }}
+        value={{
+          setPlan: this.setPlan.bind(this),
+          plan: this.state.plan,
+          setPeriodPlan: this.setPeriodPlan,
+          ranges: this.state.ranges,
+          periodValue: this.state.periodValue,
+          periodPlan: this.state.periodPlan
+        }}
       >
         <div className={classes.root}>
           <Main className={classes.main}>

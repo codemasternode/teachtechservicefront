@@ -119,128 +119,160 @@ const style = theme => {
 
 export default withStyles(style)(({ classes }) => (
   <RegisterFormContext.Consumer>
-    {({ setPlan, plan }) => (
-      <Main>
-        <Typography
-          component="h1"
-          variant="h2"
-          align="center"
-          color="textPrimary"
-          gutterBottom
-        >
-          Cennik
-        </Typography>
-        <Grid
-          sm={12}
-          container
-          justify="center"
-          className={classes.container}
-          spacing={2}
-        >
-          {tiers.map((value, index) => {
-            console.log(value.subheader);
-            return (
-              <Grid
-                item
-                key={index}
-                xs={12}
-                sm={6}
-                md={3}
-                className={classes.cardGrid}
-              >
-                <Card
-                  key={index}
-                  className={classes.card}
-                  style={
-                    index == plan
-                      ? {
-                          boxShadow: " 0px 0px 5px 1px rgba(80,50,250,1)",
-                          transform: "scale(1.05)",
-                          position: "relative",
-                          zIndex: 4
-                        }
-                      : {}
-                  }
+    {({ setPlan, plan, periodPlan }) => {
+      let toPay =
+        periodPlan.months *
+        parseFloat(tiers[plan].price * periodPlan.multiplier);
+      console.log(toPay);
+      return (
+        <Main>
+          <Typography
+            component="h1"
+            variant="h2"
+            align="center"
+            color="textPrimary"
+            gutterBottom
+          >
+            Cennik
+          </Typography>
+          <Grid
+            sm={12}
+            container
+            justify="center"
+            className={classes.container}
+            spacing={2}
+          >
+            {tiers.map((value, index) => {
+              console.log(value.subheader);
+              return (
+                <Grid
                   item
+                  key={index}
+                  xs={12}
+                  sm={6}
+                  md={3}
+                  className={classes.cardGrid}
                 >
-                  {index == plan ? (
-                    <CardHeader
-                      title={value.title}
-                      className={classes.cardHeader}
-                      style={{ background: "#0be032" }}
-                    />
-                  ) : (
-                    <CardHeader
-                      title={value.title}
-                      className={classes.cardHeader}
-                    />
-                  )}
+                  <Card
+                    key={index}
+                    className={classes.card}
+                    style={
+                      index == plan
+                        ? {
+                            boxShadow: " 0px 0px 5px 1px rgba(80,50,250,1)",
+                            transform: "scale(1.05)",
+                            position: "relative",
+                            zIndex: 4
+                          }
+                        : {}
+                    }
+                    item
+                  >
+                    {index == plan ? (
+                      <CardHeader
+                        title={value.title}
+                        className={classes.cardHeader}
+                        style={{ background: "#0be032" }}
+                      />
+                    ) : (
+                      <CardHeader
+                        title={value.title}
+                        className={classes.cardHeader}
+                      />
+                    )}
 
-                  <CardContent className={classes.cardContent}>
-                    <Typography
-                      variant="h4"
-                      color="textPrimary"
-                      className={classes.cardPrice}
-                    >
-                      {value.price} PLN
-                      <br />
-                      za miesiąc
-                    </Typography>
-                    {value.description.map((desc, index) => (
-                      <React.Fragment>
-                        {index == value.description.length - 1 ? (
-                          <Typography
-                            variant="h6"
-                            key={index}
-                            className={classes.h6Last}
-                          >
-                            {desc}
-                          </Typography>
-                        ) : (
-                          <Typography
-                            variant="h6"
-                            key={index}
-                            className={classes.h6}
-                          >
-                            {desc}
-                          </Typography>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </CardContent>
-                  <CardActions className={classes.cardActions}>
-                    <Button
-                      className={classes.selectButton}
-                      onClick={() => setPlan(index)}
-                    >
-                      Wybierz
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            );
-          })}
-        </Grid>
-        <Typography
-          component="h1"
-          variant="h2"
-          align="center"
-          color="textPrimary"
-          gutterBottom
-          style={{ marginTop: "4rem", marginBottom: 0 }}
-        >
-          Okres czasu
-        </Typography>
-        <Grid
-          sm={12}
-          container
-          justify="space-around"
-          className={classes.container}
-          spacing={2}
-        >
-          <Period />
-        </Grid>
-      </Main>
-    )}
+                    <CardContent className={classes.cardContent}>
+                      <Typography
+                        variant="h4"
+                        color="textPrimary"
+                        className={classes.cardPrice}
+                      >
+                        {value.price} PLN
+                        <br />
+                        za miesiąc
+                      </Typography>
+                      {value.description.map((desc, index) => (
+                        <React.Fragment>
+                          {index == value.description.length - 1 ? (
+                            <Typography
+                              variant="h6"
+                              key={index}
+                              className={classes.h6Last}
+                            >
+                              {desc}
+                            </Typography>
+                          ) : (
+                            <Typography
+                              variant="h6"
+                              key={index}
+                              className={classes.h6}
+                            >
+                              {desc}
+                            </Typography>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </CardContent>
+                    <CardActions className={classes.cardActions}>
+                      <Button
+                        className={classes.selectButton}
+                        onClick={() => setPlan(index)}
+                      >
+                        Wybierz
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+          <Typography
+            component="h1"
+            variant="h2"
+            align="center"
+            color="textPrimary"
+            gutterBottom
+            style={{ marginTop: "4rem", marginBottom: 0 }}
+          >
+            Okres czasu
+          </Typography>
+          <Grid
+            sm={12}
+            container
+            justify="space-around"
+            className={classes.container}
+            spacing={2}
+          >
+            <Period />
+          </Grid>
+          <Grid
+            sm={12}
+            container
+            justify="flex-start"
+            className={classes.container}
+            style={{ flexDirection: "column" }}
+          >
+            <h2
+              style={{
+                borderBottom: "2px solid gray",
+                padding: "1rem",
+                textAlign: "left"
+              }}
+            >
+              Do zapłaty
+            </h2>
+            <h2
+              style={{
+                textAlign: "left",
+                padding: "0.1rem 1rem",
+                marginTop: 0
+              }}
+            >
+              {toPay} zł
+            </h2>
+          </Grid>
+        </Main>
+      );
+    }}
   </RegisterFormContext.Consumer>
 ));
