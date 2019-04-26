@@ -4,12 +4,12 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Stepper from "./Stepper";
-import { Step1, Step2, Step3, Main } from "./steps/index";
+import { Step1, Step2, Main } from "./steps/index";
+import { withRouter } from "react-router-dom";
 
 const styles = theme => ({
   root: {
     width: "100%",
-    height: "100vh",
     marginLeft: "auto",
     marginRight: "auto"
   },
@@ -26,21 +26,20 @@ const styles = theme => ({
   controlPanel: {
     marginTop: "2rem",
     marginBottom: "6rem"
+  },
+  mail: {
+    maxWidth: 60
   }
 });
 
 function getSteps() {
-  return ["Wybierz plan", "Konto Podstawowe", "Konto Twórcy (opcjonalne)"];
+  return ["Uzupełnij dane"];
 }
 
 function getStepContent(step) {
   switch (step) {
     case 0:
-      return <Step1 />;
-    case 1:
       return <Step2 />;
-    case 2:
-      return <Step3 />;
     default:
       return "Unknown step";
   }
@@ -58,6 +57,7 @@ class HorizontalLinearStepper extends React.Component {
       multiplier: 1,
       months: 4
     },
+    errors: {},
     toPay: 0,
     ranges: [
       {
@@ -69,7 +69,7 @@ class HorizontalLinearStepper extends React.Component {
         months: 4
       },
       {
-        multiplier: 0.8,
+        multiplier: 0.85,
         months: 9
       },
       {
@@ -77,6 +77,10 @@ class HorizontalLinearStepper extends React.Component {
         months: 12
       }
     ]
+  };
+
+  handleRedirectHome = () => {
+    this.props.history.push("/");
   };
 
   setPlan = number => {
@@ -146,6 +150,43 @@ class HorizontalLinearStepper extends React.Component {
     return this.state.skipped.has(step);
   }
 
+  onFormChange(e, value) {
+    console.log(e.target.name, e.target.value, value);
+    this.setState({
+      newUser: {
+        ...this.state.newUser,
+        [e.target.name]: e.target.value
+      }
+    });
+    process.nextTick(() => {
+      console.log(this.state.newUser);
+    });
+  }
+
+  onFormSubmit(e) {
+    e.preventDefault();
+  }
+
+  onFormBlur(e, isRequired) {
+    if (isRequired && e.target.value.length == 0) {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          [e.target.name]: "Pole jest wymagane"
+        }
+      });
+    } else {
+      this.setState({
+        errors: {
+          ...this.state.errors,
+          [e.target.name]: ""
+        }
+      });
+    }
+  }
+
+  onBlurEmail(e) {}
+
   render() {
     const { classes } = this.props;
     const steps = getSteps();
@@ -158,7 +199,12 @@ class HorizontalLinearStepper extends React.Component {
           setPeriodPlan: this.setPeriodPlan,
           ranges: this.state.ranges,
           periodValue: this.state.periodValue,
-          periodPlan: this.state.periodPlan
+          periodPlan: this.state.periodPlan,
+          onFormChange: this.onFormChange.bind(this),
+          onFormSubmit: this.onFormSubmit.bind(this),
+          onBlurEmail: this.onBlurEmail.bind(this),
+          onFormBlur: this.onFormBlur.bind(this),
+          errors: this.state.errors
         }}
       >
         <div className={classes.root}>
@@ -171,11 +217,19 @@ class HorizontalLinearStepper extends React.Component {
             />
             {activeStep === steps.length ? (
               <div>
+                <img src="images/send-mail.svg" className={classes.mail} />
                 <Typography className={classes.instructions}>
-                  All steps completed - you&apos;re finished
+                  Wysłaliśmy email aktywacyjny
+                  <br /> na twoją skrzynkę odbiorczą
                 </Typography>
-                <Button onClick={this.handleReset} className={classes.button}>
-                  Reset
+
+                <Button
+                  onClick={this.handleRedirectHome}
+                  className={classes.button}
+                  variant="outlined"
+                  style={{ marginTop: "4rem" }}
+                >
+                  Powrót do strony głównej
                 </Button>
               </div>
             ) : (
@@ -224,4 +278,4 @@ HorizontalLinearStepper.propTypes = {
 };
 
 export { RegisterFormContext };
-export default withStyles(styles)(HorizontalLinearStepper);
+export default withRouter(withStyles(styles)(HorizontalLinearStepper));

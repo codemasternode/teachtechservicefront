@@ -2,7 +2,6 @@ import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
-import Step3 from "./Step3";
 
 const Main = props => (
   <Grid
@@ -18,4 +17,4 @@ const Main = props => (
   </Grid>
 );
 
-export { Step1, Step2, Step3, Main };
+export { Step1, Step2, Main };
