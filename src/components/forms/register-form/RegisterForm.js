@@ -6,6 +6,8 @@ import Typography from "@material-ui/core/Typography";
 import Stepper from "./Stepper";
 import { Step1, Step2, Main } from "./steps/index";
 import { withRouter } from "react-router-dom";
+import Axios from "axios";
+import { validateEmail } from "../../../utils/formValidation/formValidation";
 
 const styles = theme => ({
   root: {
@@ -84,15 +86,11 @@ class HorizontalLinearStepper extends React.Component {
   };
 
   setPlan = number => {
-    console.log(number);
     if (typeof number != "number") {
       throw new Error("It is not a number");
     }
     this.setState({
       plan: number
-    });
-    process.nextTick(() => {
-      console.log(this.state);
     });
   };
 
@@ -105,10 +103,85 @@ class HorizontalLinearStepper extends React.Component {
       skipped = new Set(skipped.values());
       skipped.delete(activeStep);
     }
-    this.setState({
-      activeStep: activeStep + 1,
-      skipped
-    });
+    if (activeStep == getSteps().length - 1) {
+      let properties = [
+        "first_name",
+        "last_name",
+        "email",
+        "username",
+        "password",
+        "confirmPassword"
+      ];
+      if (!this.state.newUser) {
+        for (let i = 0; i < properties.length; i++) {
+          process.nextTick(() => {
+            let currentProperty = properties[i];
+            this.setState({
+              errors: {
+                ...this.state.errors,
+                [currentProperty]: "To pole jest wymagane"
+              }
+            });
+          });
+          return;
+        }
+      }
+      if (this.state.newUser.password != this.state.newUser.confirmPassword) {
+        process.nextTick(() => {
+          this.setState({
+            errors: {
+              ...this.state.errors,
+              password: "Hasłą są różne",
+              confirmPassword: "Hasłą są różne"
+            }
+          });
+        });
+      }
+      let errors = 0;
+      for (let i = 0; i < properties.length; i++) {
+        process.nextTick(() => {
+          let currentProperty = properties[i];
+          if (
+            !this.state.newUser[currentProperty] ||
+            this.state.newUser[currentProperty].length == 0 ||
+            this.state.errors[currentProperty]
+          ) {
+            this.setState({
+              errors: {
+                ...this.state.errors,
+                [currentProperty]: "To pole jest wymagane"
+              }
+            });
+            errors++;
+          }
+        });
+      }
+      process.nextTick(() => {
+        if (errors == 0) {
+          Axios({
+            url: `${process.env.REACT_APP_PUBLIC_URL}/auth/register`,
+            method: "POST",
+            data: {
+              user: this.state.newUser
+            }
+          })
+            .then(response => {
+              this.setState({
+                activeStep: activeStep + 1,
+                skipped
+              });
+            })
+            .catch(err => {
+              console.log(err.response);
+            });
+        }
+      });
+    } else {
+      this.setState({
+        activeStep: activeStep + 1,
+        skipped
+      });
+    }
   };
 
   handleBack = () => {
@@ -151,16 +224,32 @@ class HorizontalLinearStepper extends React.Component {
   }
 
   onFormChange(e, value) {
-    console.log(e.target.name, e.target.value, value);
     this.setState({
       newUser: {
         ...this.state.newUser,
         [e.target.name]: e.target.value
       }
     });
-    process.nextTick(() => {
-      console.log(this.state.newUser);
-    });
+    let name = e.target.name;
+    setTimeout(() => {
+      console.log(e);
+      if (name == "password" || name == "confirmPassword") {
+        if (this.state.newUser) {
+          console.log(this.state);
+          if (
+            this.state.newUser.password === this.state.newUser.confirmPassword
+          ) {
+            this.setState({
+              errors: {
+                ...this.state.errors,
+                password: undefined,
+                confirmPassword: undefined
+              }
+            });
+          }
+        }
+      }
+    }, 200);
   }
 
   onFormSubmit(e) {
@@ -168,24 +257,110 @@ class HorizontalLinearStepper extends React.Component {
   }
 
   onFormBlur(e, isRequired) {
-    if (isRequired && e.target.value.length == 0) {
-      this.setState({
-        errors: {
-          ...this.state.errors,
-          [e.target.name]: "Pole jest wymagane"
-        }
+    let { name, value } = e.target;
+    if (isRequired && value.length == 0) {
+      process.nextTick(() => {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            [name]: "Pole jest wymagane"
+          }
+        });
       });
-    } else {
-      this.setState({
-        errors: {
-          ...this.state.errors,
-          [e.target.name]: ""
-        }
+      return;
+    }
+
+    if (name == "email" && !validateEmail(value)) {
+      process.nextTick(() => {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            email: "To nie jest email"
+          }
+        });
       });
+      return;
+    }
+
+    if (name == "email" && validateEmail(value)) {
+      process.nextTick(() => {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            email: undefined
+          }
+        });
+      });
+      console.log()
+      if (name === "email") {
+        this.onBlurEmail();
+      }
+    }
+    if (this.state.newUser) {
+      if (this.state.newUser[name]) {
+        process.nextTick(() => {
+          this.setState({
+            errors: {
+              ...this.state.errors,
+              [name]: undefined
+            }
+          });
+        });
+      }
+      if (name === "confirmPassword" || name === "password") {
+        if (this.state.newUser.password != this.state.newUser.confirmPassword) {
+          process.nextTick(() => {
+            this.setState({
+              errors: {
+                ...this.state.errors,
+                confirmPassword: "Hasła są różne",
+                password: "Hasła są różne"
+              }
+            });
+          });
+        }
+      }
+      if (this.state.newUser.password == this.state.newUser.confirmPassword) {
+        process.nextTick(() => {
+          this.setState({
+            errors: {
+              ...this.state.errors,
+              confirmPassword: undefined,
+              password: undefined
+            }
+          });
+        });
+      }
     }
   }
 
-  onBlurEmail(e) {}
+  onBlurEmail() {
+    console.log("asd")
+    Axios({
+      url: `${process.env.REACT_APP_PUBLIC_URL}/auth/checkemail`,
+      method: "POST",
+      data: {
+        email: this.state.newUser.email
+      }
+    }).then(res => {
+      console.log(res.data.isOccupied);
+      if (res.data.isOccupied) {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            email: "Ten email jest już zajęty"
+          }
+        });
+      } else {
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            email: undefined
+          }
+        });
+      }
+    });
+  }
 
   render() {
     const { classes } = this.props;
@@ -202,9 +377,9 @@ class HorizontalLinearStepper extends React.Component {
           periodPlan: this.state.periodPlan,
           onFormChange: this.onFormChange.bind(this),
           onFormSubmit: this.onFormSubmit.bind(this),
-          onBlurEmail: this.onBlurEmail.bind(this),
           onFormBlur: this.onFormBlur.bind(this),
-          errors: this.state.errors
+          errors: this.state.errors,
+          newUser: this.state.newUser
         }}
       >
         <div className={classes.root}>

@@ -69,7 +69,7 @@ const fields = [
   },
   {
     label: "Potwierdź hasło",
-    name: "password",
+    name: "confirmPassword",
     required: true,
     type: "password"
   },
@@ -84,7 +84,7 @@ const fields = [
 export default withStyles(styles)(({ classes }) => (
   <React.Fragment>
     <RegisterFormContext.Consumer>
-      {({ onFormChange, onFormSubmit, onFormBlur, errors }) => (
+      {({ onFormChange, onFormSubmit, onFormBlur, errors, newUser }) => (
         <Grid container>
           <Grid xs={12} sm={7} md={6} item className={classes.col}>
             <Card className={classes.card}>
@@ -102,6 +102,13 @@ export default withStyles(styles)(({ classes }) => (
                     InputLabelProps={{
                       shrink: true
                     }}
+                    value={
+                      newUser
+                        ? newUser[value.name]
+                          ? newUser[value.name]
+                          : ""
+                        : ""
+                    }
                   />
                   <FormHelperText className={classes.error}>
                     {errors[value.name] ? errors[value.name] : ""}
