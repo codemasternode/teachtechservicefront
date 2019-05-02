@@ -14,17 +14,10 @@ export const Form = ({
   onBlur,
   errors,
   onSubmit,
-  handleOpenAlert
+  handleOpenAlert,
+  login
 }) => (
   <Paper className={classes.paper}>
-    <Avatar
-      src="images/logo.png"
-      style={{
-        width: 80,
-        height: 80,
-        marginBottom: "2.5rem"
-      }}
-    />
     <Typography component="h1" variant="h3" style={{ marginBottom: "2.3rem" }}>
       Zaloguj się
     </Typography>
@@ -72,7 +65,7 @@ export const Form = ({
         variant="contained"
         color="primary"
         className={classes.submit}
-        onClick={e => onSubmit(e, handleOpenAlert)}
+        onClick={e => onSubmit(e, handleOpenAlert, login)}
       >
         Zaloguj się
       </Button>

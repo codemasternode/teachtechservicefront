@@ -30,7 +30,7 @@ const styles = theme => ({
     padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
       .spacing.unit * 3}px`,
 
-    boxShadow: "0px 0px 5px 1px rgba(0,0,0,0.75)"
+    boxShadow: "none"
   },
   avatar: {
     margin: theme.spacing.unit,
@@ -49,7 +49,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3,
     maxWidth: 200,
     marginTop: "2rem",
-    backgroundColor: "#d50000"
+    backgroundColor: theme.palette.primary.main
   }
 });
 
@@ -64,7 +64,7 @@ class LoginForm extends React.Component {
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onBlur = this.onBlur.bind(this);
-    this.onChange = this.onChange.bind(this)
+    this.onChange = this.onChange.bind(this);
   }
 
   onChange = e => {
@@ -123,7 +123,7 @@ class LoginForm extends React.Component {
     }
   };
 
-  onSubmit = (e, handleOpenAlert) => {
+  onSubmit = (e, handleOpenAlert, login) => {
     console.log(handleOpenAlert);
     e.preventDefault();
     Axios({
@@ -137,8 +137,10 @@ class LoginForm extends React.Component {
       }
     })
       .then(res => {
+        console.log(res);
         handleOpenAlert("Udało się zalogować", "success");
         localStorage.setItem("token", res.data.token);
+        login(res.data.time);
         this.props.history.replace("/");
       })
       .catch(err => {
@@ -148,6 +150,8 @@ class LoginForm extends React.Component {
             handleOpenAlert("Brak danych", "error");
           } else if (error.status === 401) {
             handleOpenAlert("Błędny email lub hasło", "error");
+          } else if (error.status === 409) {
+            handleOpenAlert("To konto wymaga weryfikacji", "warning");
           } else {
             handleOpenAlert("Błąd serwera", "warning");
           }
@@ -159,37 +163,41 @@ class LoginForm extends React.Component {
 
   componentDidMount() {
     console.log(this.props.history);
-    if (localStorage.getItem("token")) {
-      this.props.history.replace("/");
-    }
+    // if (localStorage.getItem("token")) {
+    //   this.props.history.replace("/");
+    // }
   }
 
   render() {
     const { classes } = this.props;
     return (
       <AuthContext.Consumer>
-        {({ isAuth }) => (
-          <React.Fragment>
-            {isAuth ? (
-              <Redirect to="/" />
-            ) : (
-              <AlertContext.Consumer>
-                {({ handleOpenAlert }) => (
-                  <React.Fragment>
-                    <Form
-                      classes={classes}
-                      errors={this.state.errors}
-                      onBlur={this.onBlur}
-                      onChange={this.onChange}
-                      onSubmit={this.onSubmit}
-                      handleOpenAlert={handleOpenAlert}
-                    />
-                  </React.Fragment>
-                )}
-              </AlertContext.Consumer>
-            )}
-          </React.Fragment>
-        )}
+        {({ isAuth, login }) => {
+          console.log(isAuth);
+          return (
+            <React.Fragment>
+              {isAuth ? (
+                <Redirect to="/" />
+              ) : (
+                <AlertContext.Consumer>
+                  {({ handleOpenAlert }) => (
+                    <React.Fragment>
+                      <Form
+                        classes={classes}
+                        errors={this.state.errors}
+                        onBlur={this.onBlur}
+                        onChange={this.onChange}
+                        onSubmit={this.onSubmit}
+                        login={login}
+                        handleOpenAlert={handleOpenAlert}
+                      />
+                    </React.Fragment>
+                  )}
+                </AlertContext.Consumer>
+              )}
+            </React.Fragment>
+          );
+        }}
       </AuthContext.Consumer>
     );
   }

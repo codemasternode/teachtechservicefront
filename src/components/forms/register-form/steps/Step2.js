@@ -18,7 +18,7 @@ const styles = theme => {
       flexDirection: "column"
     },
     field: {
-      maxWidth: 300,
+      maxWidth: 500,
       width: "100%",
       marginBottom: "0.25rem"
     },

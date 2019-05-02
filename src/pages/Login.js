@@ -8,7 +8,6 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     maxWidth: "100vw",
-    height: "70vh",
     overflow: "hidden",
     padding: "0.5rem"
   }

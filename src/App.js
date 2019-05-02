@@ -7,6 +7,9 @@ import Alert from "./components/alerts/Alert";
 import Snackbar from "@material-ui/core/Snackbar";
 import "dotenv/config";
 import Nav from "./components/sections/Nav";
+import Axios from "axios";
+import { withRouter } from "react-router-dom";
+import AdminRoute from "./components/helpers/routes/AdminRoute";
 
 const AlertContext = React.createContext();
 const AuthContext = React.createContext();
@@ -30,13 +33,36 @@ class App extends Component {
     isOpenAlert: false,
     messageAlert: "",
     variantAlert: "info",
-    isAuth: false
+    isAuth: undefined,
+    sessionTime: null
   };
   componentDidMount() {
     if (localStorage.getItem("token")) {
-      this.setState({
-        isAuth: true
-      });
+      Axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_PUBLIC_URL}/auth/checkauth`,
+        data: {
+          token: localStorage.getItem("token")
+        }
+      })
+        .then(time => {
+          this.sessionTime = setTimeout(() => {
+            this.setState({
+              isAuth: false
+            });
+          }, time * 1000 - 60000);
+          process.nextTick(() => {
+            this.setState({
+              isAuth: true
+            });
+          });
+        })
+        .catch(err => {
+          localStorage.removeItem("token");
+          this.setState({
+            isAuth: false
+          });
+        });
     }
   }
 
@@ -51,11 +77,51 @@ class App extends Component {
     });
   };
 
+  login(time) {
+    this.setState({
+      isAuth: true
+    });
+    this.sessionTime = setTimeout(() => {
+      this.setState({
+        isAuth: false
+      });
+      localStorage.removeItem("token");
+    }, time);
+  }
+
+  logout(e, history) {
+    this.setState({
+      isAuth: false
+    });
+    Axios({
+      url: `${process.env.REACT_APP_PUBLIC_URL}/auth/logout`,
+      method: "POST",
+      data: {
+        token: localStorage.getItem("token")
+      }
+    })
+      .then(res => {
+        console.log(res);
+        clearInterval(this.state.sessionTime);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    localStorage.removeItem("token");
+    history.push("/");
+  }
+
   render() {
     console.log(process.env.REACT_APP_PUBLIC_URL);
     return (
       <MuiThemeProvider theme={theme}>
-        <AuthContext.Provider value={{ isAuth: this.state.isAuth }}>
+        <AuthContext.Provider
+          value={{
+            isAuth: this.state.isAuth,
+            logout: this.logout.bind(this),
+            login: this.login.bind(this)
+          }}
+        >
           <AlertContext.Provider
             value={{
               handleCloseAlert: this.handleCloseAlert,
@@ -67,8 +133,13 @@ class App extends Component {
                 <Nav />
                 <div style={{ marginTop: "4rem" }}>
                   <Switch>
+                    <Route exact path="/" component={Pages.HomePage} />
                     <Route path="/login" component={Pages.LoginPage} />
                     <Route path="/register" component={Pages.RegisterPage} />
+                    <AdminRoute
+                      path="/dashboard"
+                      component={Pages.AdminDashboard}
+                    />
                   </Switch>
                   <Snackbar
                     open={this.state.isOpenAlert}
