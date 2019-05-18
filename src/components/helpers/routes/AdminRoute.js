@@ -6,7 +6,7 @@ const AdminRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={props =>
-        localStorage.getItem("role") === "admin" ? (
+        localStorage.getItem("isAdmin") === "true" ? (
           <Component {...props} />
         ) : (
           <Redirect to="/" />

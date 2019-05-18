@@ -10,6 +10,7 @@ import Nav from "./components/sections/Nav";
 import Axios from "axios";
 import { withRouter } from "react-router-dom";
 import AdminRoute from "./components/helpers/routes/AdminRoute";
+import PrivateRoute from "./components/helpers/routes/PrivateRoute";
 
 const AlertContext = React.createContext();
 const AuthContext = React.createContext();
@@ -59,6 +60,7 @@ class App extends Component {
         })
         .catch(err => {
           localStorage.removeItem("token");
+          localStorage.removeItem("isAdmin");
           this.setState({
             isAuth: false
           });
@@ -86,6 +88,7 @@ class App extends Component {
         isAuth: false
       });
       localStorage.removeItem("token");
+      localStorage.removeItem("isAdmin");
     }, time);
   }
 
@@ -108,6 +111,7 @@ class App extends Component {
         console.log(err);
       });
     localStorage.removeItem("token");
+    localStorage.removeItem("isAdmin");
     history.push("/");
   }
 
@@ -134,12 +138,28 @@ class App extends Component {
                 <div style={{ marginTop: "4rem" }}>
                   <Switch>
                     <Route exact path="/" component={Pages.HomePage} />
-                    <Route path="/login" component={Pages.LoginPage} />
-                    <Route path="/register" component={Pages.RegisterPage} />
+                    <Route exact path="/login" component={Pages.LoginPage} />
+                    <Route
+                      exact
+                      path="/register"
+                      component={Pages.RegisterPage}
+                    />
+                    <Route exact path="/about-us" component={Pages.AboutUs} />
+                    <PrivateRoute
+                      path="/my-courses"
+                      component={Pages.MyCourses}
+                    />
+                    <PrivateRoute
+                      exact
+                      path="/course/:courseTitle"
+                      component={Pages.CoursePage}
+                    />
                     <AdminRoute
+                      exact
                       path="/dashboard"
                       component={Pages.AdminDashboard}
                     />
+                    <Route component={Pages.NotFound} />
                   </Switch>
                   <Snackbar
                     open={this.state.isOpenAlert}

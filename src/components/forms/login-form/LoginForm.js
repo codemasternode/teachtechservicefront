@@ -140,8 +140,9 @@ class LoginForm extends React.Component {
         console.log(res);
         handleOpenAlert("Udało się zalogować", "success");
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("isAdmin", res.data.isAdmin);
         login(res.data.time);
-        this.props.history.replace("/");
+        // this.props.history.replace("/");
       })
       .catch(err => {
         if (err.response) {
@@ -160,13 +161,6 @@ class LoginForm extends React.Component {
         }
       });
   };
-
-  componentDidMount() {
-    console.log(this.props.history);
-    // if (localStorage.getItem("token")) {
-    //   this.props.history.replace("/");
-    // }
-  }
 
   render() {
     const { classes } = this.props;

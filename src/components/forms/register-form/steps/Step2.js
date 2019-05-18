@@ -72,19 +72,13 @@ const fields = [
     name: "confirmPassword",
     required: true,
     type: "password"
-  },
-  {
-    label: "Data urodzenia",
-    name: "birthday",
-    required: true,
-    type: "date"
   }
 ];
 
 export default withStyles(styles)(({ classes }) => (
   <React.Fragment>
     <RegisterFormContext.Consumer>
-      {({ onFormChange, onFormSubmit, onFormBlur, errors, newUser }) => (
+      {({ onFormChange, onFormBlur, errors, newUser }) => (
         <Grid container>
           <Grid xs={12} sm={7} md={6} item className={classes.col}>
             <Card className={classes.card}>
