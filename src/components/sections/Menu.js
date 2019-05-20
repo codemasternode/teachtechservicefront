@@ -6,7 +6,12 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import { Home, AccountBox, ContactSupport } from "@material-ui/icons";
+import {
+  Home,
+  AccountBox,
+  ContactSupport,
+  Dashboard
+} from "@material-ui/icons";
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 
@@ -88,6 +93,14 @@ const routes = [
   }
 ];
 
+const adminRoutes = [
+  {
+    path: "/dashboard",
+    text: "Panel administracyjny",
+    icon: () => <Dashboard />
+  }
+];
+
 function Menu(props) {
   const { classes, theme, handleMenuOpen, open, history } = props;
   const changeLocation = location => {
@@ -141,7 +154,18 @@ function Menu(props) {
           )}
         </List>
         <Divider />
-        <List />
+        {localStorage.getItem("isAdmin") === "true" ? (
+          <List>
+            {adminRoutes.map((value, index) => (
+              <ListItem button key={index} onClick={changeLocation(value.path)}>
+                <ListItemIcon>{value.icon()}</ListItemIcon>
+                <ListItemText primary={value.text} />
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          ""
+        )}
       </Drawer>
     </div>
   );

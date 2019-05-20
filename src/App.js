@@ -8,7 +8,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import "dotenv/config";
 import Nav from "./components/sections/Nav";
 import Axios from "axios";
-import { withRouter } from "react-router-dom";
+import { withStyles } from "@material-ui/styles";
 import AdminRoute from "./components/helpers/routes/AdminRoute";
 import PrivateRoute from "./components/helpers/routes/PrivateRoute";
 
@@ -28,6 +28,18 @@ const theme = createMuiTheme({
     }
   }
 });
+
+const styles = {
+  root: {
+    maxWidth: 1600,
+    width: "100%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    padding: "2rem 2rem 2rem 1rem",
+    marginTop: "5rem",
+    boxSizing: "border-box"
+  }
+};
 
 class App extends Component {
   state = {
@@ -117,6 +129,7 @@ class App extends Component {
 
   render() {
     console.log(process.env.REACT_APP_PUBLIC_URL);
+    const { classes } = this.props;
     return (
       <MuiThemeProvider theme={theme}>
         <AuthContext.Provider
@@ -132,10 +145,10 @@ class App extends Component {
               handleOpenAlert: this.handleOpenAlert
             }}
           >
-            <div className="App">
+            <div>
               <Router>
                 <Nav />
-                <div style={{ marginTop: "4rem" }}>
+                <div className={classes.root}>
                   <Switch>
                     <Route exact path="/" component={Pages.HomePage} />
                     <Route exact path="/login" component={Pages.LoginPage} />
@@ -186,4 +199,4 @@ class App extends Component {
   }
 }
 export { AlertContext, AuthContext };
-export default App;
+export default withStyles(styles)(App);
